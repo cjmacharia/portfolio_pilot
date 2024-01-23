@@ -1,0 +1,8 @@
+CREATE TABLE stock (
+    stock_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(15, 2),
+    symbol VARCHAR(10) NOT NULL,
+    exchange VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
