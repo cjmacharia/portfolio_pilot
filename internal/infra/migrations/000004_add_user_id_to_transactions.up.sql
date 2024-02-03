@@ -1,0 +1,6 @@
+ALTER TABLE transactions
+    ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(user_id) DEFAULT 0 NOT NULL;
+
+
+ALTER TABLE transactions
+    ALTER COLUMN stock_id SET NOT NULL;

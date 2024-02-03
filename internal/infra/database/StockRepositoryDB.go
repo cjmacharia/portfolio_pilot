@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"github.com/cjmacharia/portfolioPilot/internal/domain"
 	"github.com/jmoiron/sqlx"
 	"time"
@@ -17,9 +16,20 @@ func (db RepositoryDB) AddStock(s *domain.Stock) (*domain.Stock, error) {
 	var savedStock domain.Stock
 	err := row.Scan(&savedStock.Name, &savedStock.Price, &savedStock.Symbol, &savedStock.Exchange)
 	if err != nil {
-		fmt.Println("No rows returned after INSERT")
+		return nil, err
 	}
 	return &savedStock, nil
+}
+
+func (db RepositoryDB) GetStockByID(stockID int) (*domain.Stock, error) {
+	sql := "SELECT price, name, symbol, exchange from stock WHERE stock_id= $1"
+	row := db.Client.QueryRow(sql, stockID)
+	var stock domain.Stock
+	err := row.Scan(&stock.Price, &stock.Name, &stock.Symbol, &stock.Exchange)
+	if err != nil {
+		return nil, err
+	}
+	return &stock, nil
 }
 
 func NewStockRepositoryDB(dbClient *sqlx.DB) RepositoryDB {
