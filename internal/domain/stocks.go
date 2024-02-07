@@ -19,4 +19,6 @@ type StockPortfolio struct {
 type StockRepository interface {
 	AddStock(stock *Stock) (*Stock, error)
 	GetStockByID(stockID int) (*Stock, error)
+	GetStocks() ([]Stock, error)
+	UpdateStock(symbol string, price float64) error
 }

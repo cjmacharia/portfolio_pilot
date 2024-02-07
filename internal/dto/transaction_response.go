@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/cjmacharia/portfolioPilot/internal/domain"
+import (
+	"github.com/cjmacharia/portfolioPilot/internal/domain"
+)
 
 type TransactionResponse struct {
 	TransactionType domain.TransactionType `json:"transaction_type"`

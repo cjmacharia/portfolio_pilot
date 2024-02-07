@@ -32,6 +32,36 @@ func (db RepositoryDB) GetStockByID(stockID int) (*domain.Stock, error) {
 	return &stock, nil
 }
 
+func (db RepositoryDB) GetStocks() ([]domain.Stock, error) {
+	sql := "SELECT * from stock"
+	rows, err := db.Client.Query(sql)
+	if err != nil {
+		return nil, err
+	}
+	var stocks []domain.Stock
+	for rows.Next() {
+		var s domain.Stock
+		err = rows.Scan(&s.StockID, &s.Name, &s.Price, &s.Symbol, &s.Exchange, &s.LastUpdated)
+		if err != nil {
+			return nil, err
+		}
+		stocks = append(stocks, s)
+	}
+
+	return stocks, nil
+}
+
+func (db RepositoryDB) UpdateStock(symbol string, price float64) error {
+	query := "UPDATE stock SET price = $2 where symbol = $1"
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	_, err := db.Client.QueryContext(ctx, query, symbol, price)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func NewStockRepositoryDB(dbClient *sqlx.DB) RepositoryDB {
 	return RepositoryDB{Client: dbClient}
 }

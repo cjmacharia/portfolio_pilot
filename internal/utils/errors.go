@@ -22,4 +22,5 @@ var (
 	ErrFetchStockByUserID  = errors.New("failed to fetch stock using the user ID")
 	ErrInternalServerError = errors.New("something went wrong")
 	ErrTokenSignature      = errors.New("please check your token and try again")
+	ErrFetchAllStocks      = errors.New("failed to fetch available stock")
 )

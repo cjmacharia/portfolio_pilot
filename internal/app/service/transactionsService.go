@@ -1,11 +1,14 @@
 package service
 
-import "github.com/cjmacharia/portfolioPilot/internal/domain"
+import (
+	"github.com/cjmacharia/portfolioPilot/internal/domain"
+)
 
 type Transactions interface {
 	NewTransaction(transaction *domain.Transaction) (*domain.Transaction, error)
 	GetStockQuantityService(userId int, stockId int) (int64, error)
 	GetUserStockService(userId int) ([]*domain.StockPortfolio, error)
+	GetUserTransactions(userId int) ([]domain.UserTransactionsResponse, error)
 }
 type DefaultTransactionService struct {
 	repo domain.TransactionRepository
@@ -17,6 +20,14 @@ func (ts DefaultTransactionService) NewTransaction(t *domain.Transaction) (*doma
 		return nil, err
 	}
 	return createdTransaction, nil
+}
+
+func (ts DefaultTransactionService) GetUserTransactions(userId int) ([]domain.UserTransactionsResponse, error) {
+	transactions, err := ts.repo.GetUserTransactions(userId)
+	if err != nil {
+		return nil, err
+	}
+	return transactions, nil
 }
 
 func (ts DefaultTransactionService) GetStockQuantityService(userId int, stockId int) (int64, error) {

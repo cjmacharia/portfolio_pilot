@@ -24,7 +24,7 @@ func (th *TransactionsHandler) HandleTransaction(w http.ResponseWriter, r *http.
 		http.Error(w, utils.ErrInvalidStockID.Error(), http.StatusBadRequest)
 		return
 	}
-	stock, err := th.stockService.GetStockByID(int(stockId))
+	stock, err := th.stockService.GetStockByID(stockId)
 	if err != nil {
 		http.Error(w, utils.ErrFetchStockPrice.Error(), http.StatusInternalServerError)
 		return
@@ -72,6 +72,11 @@ func (th *TransactionsHandler) HandleTransaction(w http.ResponseWriter, r *http.
 	case "DEPOSIT":
 		newBalance = currentWalletBalance + t.TotalAmount
 		t.StockID = nil
+
+	case "WITHDRAW":
+
+		newBalance = currentWalletBalance - t.TotalAmount
+		t.StockID = nil
 	}
 
 	_, err = th.transactionService.NewTransaction(t)
@@ -106,6 +111,20 @@ func getID(w http.ResponseWriter, r *http.Request) (int, error) {
 	return urlId, nil
 }
 
+func (th *TransactionsHandler) GetUserTransactions(w http.ResponseWriter, r *http.Request) {
+	id, err := getID(w, r)
+	if err != nil {
+		http.Error(w, utils.ErrFetchStockById.Error(), http.StatusInternalServerError)
+
+	}
+	t, err := th.transactionService.GetUserTransactions(id)
+	if err != nil {
+		http.Error(w, utils.ErrInternalServerError.Error(), http.StatusInternalServerError)
+
+	}
+	json.NewEncoder(w).Encode(t)
+}
+
 func (th *TransactionsHandler) GetUserPortfolio(w http.ResponseWriter, r *http.Request) {
 	id, err := getID(w, r)
 	var p []domain.Portfolio
@@ -126,5 +145,4 @@ func (th *TransactionsHandler) GetUserPortfolio(w http.ResponseWriter, r *http.R
 		p = append(p, portfolio)
 	}
 	json.NewEncoder(w).Encode(p)
-
 }

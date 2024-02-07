@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/cjmacharia/portfolioPilot/internal/app/service"
 	"github.com/cjmacharia/portfolioPilot/internal/infra/database"
-	"github.com/cjmacharia/portfolioPilot/internal/middlewares"
 	"log"
 	"net/http"
 
@@ -24,11 +23,14 @@ func InitApp() {
 	}
 
 	router := mux.NewRouter()
-	router.HandleFunc("/api/stock/{id:[0-9]+}/transaction", middlewares.AuthMiddleware(t.HandleTransaction)).Methods("POST")
+	router.HandleFunc("/api/stock/{id:[0-9]+}/transaction", t.HandleTransaction).Methods("POST")
 	router.HandleFunc("/api/stock", s.PostStocksHandler).Methods("POST")
-	router.HandleFunc("/api/userSignup", u.UserSignUpHandler).Methods("POST")
+	router.HandleFunc("/api/stock", s.getAllStocks).Methods("GET")
+	router.HandleFunc("/api/stock", s.UpdateStockPrices).Methods("PUT")
+	router.HandleFunc("/api/signup", u.UserSignUpHandler).Methods("POST")
 	router.HandleFunc("/api/login", u.LoginHandler).Methods("POST")
 	router.HandleFunc("/api/user/{id:[0-9]+}/portfolio", t.GetUserPortfolio).Methods("GET")
+	router.HandleFunc("/api/user/{id:[0-9]+}/transactions", t.GetUserTransactions).Methods("GET")
 
 	http.Handle("/", router)
 	err := http.ListenAndServe(":8080", router)
